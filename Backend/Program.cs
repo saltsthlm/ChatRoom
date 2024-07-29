@@ -42,5 +42,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 UserEndpoints.SetupEndpoints(app);
+MessageEndpoints.SetupEndpoints(app);
 
 app.Run();

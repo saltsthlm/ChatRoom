@@ -24,8 +24,8 @@ public static class MessageEndpoints
             Console.WriteLine($"GET at /messages/{id}");
             try
             {
-                var user = db.Messages.First(data => data!.Id == id);
-                return Results.Ok(user);
+                var message = db.Messages.First(data => data!.Id == id);
+                return Results.Ok(message);
             }
             catch (Exception)
             {
@@ -36,7 +36,7 @@ public static class MessageEndpoints
         app.MapGet("/messages", (int id, ChatRoomDatabaseContext db) =>
         {
             Console.WriteLine($"GET at /messages/{id}");
-            var messages = db.Users.Where(data => data!.Id == id).ToArray();
+            var messages = db.Messages.Where(data => data!.Id == id).ToArray();
 
             if (messages.Any())
             {
@@ -44,6 +44,30 @@ public static class MessageEndpoints
             }
 
             return Results.NotFound();
+        });
+
+        app.MapPut("/messages/{id}", async (int id, Message message, ChatRoomDatabaseContext db) =>
+        {
+            Console.WriteLine($"DELETE at /messages/{id}");
+
+            try
+            {
+                db.Messages.Update(message);
+
+                var dbMessage = db.Messages.First(data => data!.Id == id);
+
+                dbMessage.Id = message.Id;
+                dbMessage.Content = message.Content;
+                dbMessage.SendDate = message.SendDate;
+
+                await db.SaveChangesAsync();
+
+                return Results.Ok(message);
+            }
+            catch (Exception)
+            {
+                return Results.NotFound();
+            }
         });
 
         app.MapDelete("/messages/{id}", async (int id, ChatRoomDatabaseContext db) =>

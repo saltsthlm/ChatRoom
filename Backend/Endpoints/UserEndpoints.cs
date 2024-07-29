@@ -46,6 +46,29 @@ public static class UserEndpoints
             return Results.NotFound();
         });
 
+        app.MapPut("/users/{id}", async (int id, User user, ChatRoomDatabaseContext db) =>
+        {
+            Console.WriteLine($"DELETE at /messages/{id}");
+
+            try
+            {
+                db.Users.Update(user);
+
+                var dbUser = db.Users.First(data => data!.Id == id);
+
+                dbUser.Id = user.Id;
+                dbUser.Alias = user.Alias;
+
+                await db.SaveChangesAsync();
+
+                return Results.Ok(user);
+            }
+            catch (Exception)
+            {
+                return Results.NotFound();
+            }
+        });
+
         app.MapDelete("/users/{id}", async (int id, ChatRoomDatabaseContext db) =>
         {
             Console.WriteLine($"DELETE at /users/{id}");
@@ -65,7 +88,7 @@ public static class UserEndpoints
         app.MapDelete("/users", (ChatRoomDatabaseContext db) =>
         {
             Console.WriteLine($"DELETE at /users");
-            
+
             db.Remove(db.Users);
             return Results.Ok();
         });

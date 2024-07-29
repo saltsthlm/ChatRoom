@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<CustomDatabaseContext>(options => options.UseSqlite("CustomAPI"));
+builder.Services.AddDbContext<ChatRoomDatabaseContext>(options => options.UseSqlite("ChatRoomAPI"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
 {
-    config.DocumentName = "CustomAPI";
-    config.Title = "CustomAPI v1";
+    config.DocumentName = "ChatRoomAPI";
+    config.Title = "ChatRoomAPI v1";
     config.Version = "v1";
 });
 
@@ -40,20 +40,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-app.MapPost("/custom-data-type", async (CustomDataType data, CustomDatabaseContext db) =>
+app.MapPost("/users", async (User user, ChatRoomDatabaseContext db) =>
 {
-    Console.WriteLine("Posting data");
-    db.Add(data);
+    Console.WriteLine($"POST at {"/users"}: user");
+    db.Add(user);
     await db.SaveChangesAsync();
     return Results.Created();
 });
 
-app.MapGet("/custom-data-type/{id}", (int id, CustomDatabaseContext db) =>
+app.MapGet("/user/{id}", (int id, ChatRoomDatabaseContext db) =>
 {
+    Console.WriteLine($"GET at {"/users/" + id}");
     try
     {
-        CustomDataType entity = db.CustomData.First(data => data!.Id == id);
-        return Results.Ok(entity);
+        User user = db.Users.First(data => data!.Id == id);
+        return Results.Ok(user);
     }
     catch (Exception)
     {
@@ -61,21 +62,13 @@ app.MapGet("/custom-data-type/{id}", (int id, CustomDatabaseContext db) =>
     }
 });
 
-app.MapPut("/custom-data-type/{id}", async (int id, CustomDataType data, CustomDatabaseContext db) =>
+app.MapDelete("/users/{id}", async (int id, ChatRoomDatabaseContext db) =>
 {
-    var dataFromDb = db.CustomData.First(data => data.Id == id);
-    db.Update(dataFromDb);
-    //update properties on dataFromDb
-    await db.SaveChangesAsync();
-    return Results.Accepted();
-});
-
-app.MapDelete("/custom-data-type/{id}", async (int id, CustomDatabaseContext db) =>
-{
+    Console.WriteLine($"DELETE at /users/{id}");
     try
     {
-        CustomDataType entity = db.CustomData.First(data => data!.Id == id);
-        db.Remove(entity);
+        User user = db.Users.First(data => data!.Id == id);
+        db.Remove(user);
         await db.SaveChangesAsync();
         return Results.Accepted();
     }

@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Models
 {
-    public class CustomDatabaseContext : DbContext
+    public class ChatRoomDatabaseContext : DbContext
     {
-        public DbSet<CustomDataType> CustomData { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         public string DbPath { get; }
         private string _databaseFileName = "custom.db";
 
-        public CustomDatabaseContext(DbContextOptions<CustomDatabaseContext> options)
+        public ChatRoomDatabaseContext(DbContextOptions<ChatRoomDatabaseContext> options)
         : base(options)
         {
             DbPath = System.IO.Path.Join(Environment.CurrentDirectory, "Data", _databaseFileName);

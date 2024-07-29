@@ -1,6 +1,7 @@
 using NSwag.AspNetCore;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Backend.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,42 +41,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-app.MapPost("/users", async (User user, ChatRoomDatabaseContext db) =>
-{
-    Console.WriteLine($"POST at {"/users"}: user");
-    db.Add(user);
-    await db.SaveChangesAsync();
-    return Results.Created();
-});
-
-app.MapGet("/user/{id}", (int id, ChatRoomDatabaseContext db) =>
-{
-    Console.WriteLine($"GET at {"/users/" + id}");
-    try
-    {
-        User user = db.Users.First(data => data!.Id == id);
-        return Results.Ok(user);
-    }
-    catch (Exception)
-    {
-        return Results.NotFound();
-    }
-});
-
-app.MapDelete("/users/{id}", async (int id, ChatRoomDatabaseContext db) =>
-{
-    Console.WriteLine($"DELETE at /users/{id}");
-    try
-    {
-        User user = db.Users.First(data => data!.Id == id);
-        db.Remove(user);
-        await db.SaveChangesAsync();
-        return Results.Accepted();
-    }
-    catch (Exception)
-    {
-        return Results.NotFound();
-    }
-});
+UserEndpoints.SetupEndpoints(app);
 
 app.Run();

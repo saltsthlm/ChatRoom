@@ -1,0 +1,14 @@
+Git
+1. git init
+2. git add .
+3. git commit -m"initial commit"
+
+Frontend
+2. npm install
+3. npm run dev
+
+Backend
+1. rename all classes to sensible names for the project
+2. create models and adjust the database class
+3. dotnet ef migrations add InitialCreate
+4. dotnet ef database update

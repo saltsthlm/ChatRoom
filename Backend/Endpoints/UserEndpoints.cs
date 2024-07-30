@@ -33,17 +33,10 @@ public static class UserEndpoints
             }
         });
 
-        app.MapGet("/users", (int id, ChatRoomDatabaseContext db) =>
+        app.MapGet("/users", (ChatRoomDatabaseContext db) =>
         {
-            Console.WriteLine($"GET at /users/{id}");
-            User[] users = db.Users.Where(data => data!.Id == id).ToArray();
-
-            if (users.Any())
-            {
-                return Results.Ok(users);
-            }
-
-            return Results.NotFound();
+            Console.WriteLine($"GET at /users");
+            return Results.Ok(db.Messages);
         });
 
         app.MapPut("/users/{id}", async (int id, User user, ChatRoomDatabaseContext db) =>

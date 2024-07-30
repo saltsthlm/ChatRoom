@@ -33,17 +33,10 @@ public static class MessageEndpoints
             }
         });
 
-        app.MapGet("/messages", (int id, ChatRoomDatabaseContext db) =>
+        app.MapGet("/messages", (ChatRoomDatabaseContext db) =>
         {
-            Console.WriteLine($"GET at /messages/{id}");
-            var messages = db.Messages.Where(data => data!.Id == id).ToArray();
-
-            if (messages.Any())
-            {
-                return Results.Ok(messages);
-            }
-
-            return Results.NotFound();
+            Console.WriteLine($"GET at /messages");
+            return Results.Ok(db.Messages);
         });
 
         app.MapPut("/messages/{id}", async (int id, Message message, ChatRoomDatabaseContext db) =>
